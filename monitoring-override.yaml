@@ -1,0 +1,34 @@
+grafana:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClassName: "default"
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+    - monitoring.local
+    tls:
+    - secretName: monitoring-tls
+      hosts:
+        - monitoring.local
+prometheus:
+  prometheusSpec:
+    persistentVolumeClaimRetentionPolicy: 
+      whenDeleted: Retain
+    retention: 100d
+    storageSpec:
+    # Using PersistentVolumeClaim
+    #
+      volumeClaimTemplate:
+        spec:
+          storageClassName: default
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
